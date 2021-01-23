@@ -81,17 +81,13 @@ class ThemeModeSelector extends StatefulWidget {
     Color lightToggle,
     Color darkBackground,
     Color darkToggle,
-    ThemeData lightTheme,
-    ThemeData darkTheme,
     ValueChanged<ThemeMode> onChanged,
   })  : _durationInMs = durationInMs,
         _onChanged = onChanged,
-        _lightBackground =
-            lightBackground ?? lightTheme?.backgroundColor ?? Color(0xFF689DFF),
-        _lightToggle = lightToggle ?? lightTheme?.primaryColor ?? Colors.white,
-        _darkBackground =
-            darkBackground ?? darkTheme?.backgroundColor ?? Color(0xFF040507),
-        _darkToggle = darkToggle ?? darkTheme?.primaryColor ?? Colors.white,
+        _lightBackground = lightBackground ?? Color(0xFF689DFF),
+        _lightToggle = lightToggle ?? Colors.white,
+        _darkBackground = darkBackground ?? Color(0xFF040507),
+        _darkToggle = darkToggle ?? Colors.white,
         super(key: key) {
     _consts = ThemeModeSelectorConsts(height);
   }
@@ -109,11 +105,6 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
   Animation<double> _starToggleFade;
   Animation<double> _flareToggleFade;
   Animation<Color> _bgColorAnimation;
-
-  Color _lightBackground;
-  Color _lightToggle;
-  Color _darkBackground;
-  Color _darkToggle;
 
   bool isChecked = false;
 
@@ -168,11 +159,6 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
     _flareFade = Tween(begin: 1.0, end: 0.0).animate(earlyFade);
     _starToggleFade = Tween(begin: 0.0, end: 1.0).animate(earlyFade);
     _flareToggleFade = Tween(begin: 1.0, end: 0.0).animate(earlyFade);
-
-    _lightBackground = widget._lightBackground;
-    _lightToggle = widget._lightToggle;
-    _darkBackground = widget._darkBackground;
-    _darkToggle = widget._darkToggle;
   }
 
   @override
@@ -235,7 +221,8 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
                 ...widget._consts.stars
                     .map((star) => CelestialTransition(
                           alphaAnimation: _starFade,
-                          child: Star(size: star['size'], color: _darkToggle),
+                          child: Star(
+                              size: star['size'], color: widget._darkToggle),
                           relativeRectAnimation:
                               slide(star['from'], star['to'], star['size']),
                         ))
@@ -243,8 +230,8 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
                 ...widget._consts.flares
                     .map((flare) => CelestialTransition(
                           alphaAnimation: _flareFade,
-                          child:
-                              Flare(size: flare['size'], color: _lightToggle),
+                          child: Flare(
+                              size: flare['size'], color: widget._lightToggle),
                           relativeRectAnimation:
                               slide(flare['from'], flare['to'], flare['size']),
                         ))
@@ -255,14 +242,14 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
                     FadeTransition(
                       opacity: _flareToggleFade,
                       child: Sun(
-                        color: _lightToggle,
+                        color: widget._lightToggle,
                         size: widget._consts.inset.height,
                       ),
                     ),
                     FadeTransition(
                       opacity: _starToggleFade,
                       child: Moon(
-                        color: _darkToggle,
+                        color: widget._darkToggle,
                         size: widget._consts.inset.height,
                       ),
                     ),
