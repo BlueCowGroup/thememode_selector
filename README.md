@@ -12,15 +12,15 @@ A widget to toggle between a light or dark `ThemeMode`
 
 ## Features
 ---
-• Configurable colors for background and foreground colors for both light and dark modes
-• API similar to standard Material Slider widget
+* Configurable colors for background and foreground colors for both light and dark modes
+* API similar to standard Material Slider widget
 
 ## Supported Platforms
 ---
-• Flutter Android
-• Flutter iOS
-• Flutter Web
-• Flutter Desktop
+* Flutter Android
+* Flutter iOS
+* Flutter Web
+* Flutter Desktop
 
 ## Installation
 ---
