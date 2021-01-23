@@ -1,3 +1,7 @@
+## [0.1.0] - 01/23/2021
+
+* 110 score on pub.dev; ready to release
+
 ## [0.1.0-dev.2] - 01/23/2021
 
 * Resolving some scoring issues on pub.dev

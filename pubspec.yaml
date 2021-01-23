@@ -1,6 +1,6 @@
 name: thememode_selector
 description: A widget to select between light and dark ThemeMode (in development, but working fine)
-version: 0.1.0-dev.1
+version: 0.1.0
 repository: https://github.com/BlueCowGroup/thememode_selector
 homepage: https://github.com/BlueCowGroup/thememode_selector
 
