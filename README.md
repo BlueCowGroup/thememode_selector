@@ -7,23 +7,23 @@ I am currently working with the concept of Theme's in Flutter and I wanted to bu
 https://dribbble.com/shots/7635203-Light-Dark-mode-toggle-switcher/attachments/396864?mode=media
 
 # thememode_selector
----
+
 A widget to toggle between a light or dark `ThemeMode`
 
 ## Features
----
+
 * Configurable colors for background and foreground colors for both light and dark modes
 * API similar to standard Material Slider widget
 
 ## Supported Platforms
----
+
 * Flutter Android
 * Flutter iOS
 * Flutter Web
 * Flutter Desktop
 
 ## Installation
----
+
 Add `thememode_selector: ^0.1.0` to your `pubspec.yaml` configuration.
 
 ```dart
@@ -31,7 +31,7 @@ import 'package:thememode_selector/thememode_selector.dart'
 ```
 
 ## How to use
----
+
 ```dart
 Widget build(BuildContext context) {
   return Scaffold(
@@ -52,7 +52,7 @@ Widget build(BuildContext context) {
 ```
 
 ## License
----
+
 MIT
 
 
