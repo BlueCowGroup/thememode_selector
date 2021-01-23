@@ -1,3 +1,8 @@
+## [0.1.0-dev.2] - 01/23/2021
+
+* Resolving some scoring issues on pub.dev
+* Added minimal API documentation and fixed static analysis problems
+
 ## [0.1.0-dev.1] - 01/20/2021
 
 * Initial release

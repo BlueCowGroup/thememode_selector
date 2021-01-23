@@ -5,7 +5,7 @@ import 'moon.dart';
 import 'star.dart';
 import 'sun.dart';
 
-class ThemeModeSelectorConsts {
+class _ThemeModeSelectorConsts {
   Size size;
   EdgeInsets padding;
   Size inset;
@@ -13,7 +13,7 @@ class ThemeModeSelectorConsts {
   List<dynamic> stars = [];
   List<dynamic> flares = [];
 
-  ThemeModeSelectorConsts(double height) {
+  _ThemeModeSelectorConsts(double height) {
     var width = height * 100 / 56;
     size = Size(width, height);
     padding = EdgeInsets.fromLTRB(
@@ -64,15 +64,30 @@ class ThemeModeSelectorConsts {
   }
 }
 
+/// A ThemeMode Selector widget designed by Zhenya Karapetyan
 class ThemeModeSelector extends StatefulWidget {
   final int _durationInMs;
   final ValueChanged<ThemeMode> _onChanged;
-  Color _lightBackground;
-  Color _darkBackground;
-  Color _lightToggle;
-  Color _darkToggle;
-  ThemeModeSelectorConsts _consts;
+  final Color _lightBackground;
+  final Color _darkBackground;
+  final Color _lightToggle;
+  final Color _darkToggle;
+  final _ThemeModeSelectorConsts _consts;
 
+  /// Creates a ThemeMode Selector.
+  ///
+  /// This selector maintains its own state and the widget calls the
+  /// [onChanged] callback when its state is changed.
+  ///
+  /// * [height] allows the user to control the height of the widget and
+  ///    a default height of 39 is used.
+  /// * [onChanged] is called while the user is selecting a new value for the
+  ///   slider.
+  /// * [lightBackground] and [lightToggle] are colors which control the
+  ///   foreground and background colors representing the "light" theme mode
+  /// * [darkBackground] and [darkToggle] are colors which control the
+  ///   foreground and background colors representing the "dark" theme mode
+  ///
   ThemeModeSelector({
     Key key,
     durationInMs = 750,
@@ -88,9 +103,8 @@ class ThemeModeSelector extends StatefulWidget {
         _lightToggle = lightToggle ?? Colors.white,
         _darkBackground = darkBackground ?? Color(0xFF040507),
         _darkToggle = darkToggle ?? Colors.white,
-        super(key: key) {
-    _consts = ThemeModeSelectorConsts(height);
-  }
+        _consts = _ThemeModeSelectorConsts(height),
+        super(key: key);
 
   @override
   _ThemeModeSelectorState createState() => _ThemeModeSelectorState();
@@ -165,11 +179,6 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-
-  void _handleChanged(ThemeMode value) {
-    assert(widget._onChanged != null);
-    widget._onChanged(value);
   }
 
   Animation<RelativeRect> slide(Offset from, Offset to, double size) {

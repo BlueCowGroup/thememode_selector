@@ -2,7 +2,7 @@
 
 I am currently working with the concept of Theme's in Flutter and I wanted to build a widget which would allow me to switch between light and dark themes. Seeking a design for a simple toggle, I was lucky enough to stumble into some of [Zhenya Karapetyan's](https://dribbble.com/jenkarapetyan) amazing work on [Dribbble](https://dribbble.com/). Zhenya's simple yet fun design of a toggle component would look very nice in Flutter, and it has some really cool animations which I wanted to learn.
 
-![Zhenya Karapetyan's Light/Dark Toggle](screenshot/Light-Dark-mode-toggle-switcher.gif)
+![Zhenya Karapetyan's Light/Dark Toggle](https://github.com/BlueCowGroup/thememode_selector/raw/main/screenshot/Light-Dark-mode-toggle-switcher.gif)
 
 https://dribbble.com/shots/7635203-Light-Dark-mode-toggle-switcher/attachments/396864?mode=media
 
