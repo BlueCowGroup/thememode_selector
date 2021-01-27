@@ -162,7 +162,7 @@ Buckle up, because this section runs deep. To research what it takes to render a
 
 Why, oh why do we not simply use our `StatefulWidgets`'  `build(BuildContext context)` method to lay out our widgets like we would any normal UX. Why are we delving into so much obscure code to paint a pretty simple widget. No seriously, I'm asking why?
 
-![checkbox_uml](/Users/jimcook/Projects/banksee/thememode_selector/doc/images/checkbox_uml.svg)
+![checkbox_uml](https://raw.githubusercontent.com/BlueCowGroup/thememode_selector/main/doc/images/checkbox_uml.svg)
 
 Obviously we don't have to implement all of these classes. The ones which we are responsible for are as follows.
 
