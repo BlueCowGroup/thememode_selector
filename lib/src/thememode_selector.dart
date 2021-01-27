@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thememode_selector/thememode_selector.dart';
 import 'celestial_transition.dart';
 import 'flare.dart';
 import 'moon.dart';
@@ -67,12 +68,12 @@ class _ThemeModeSelectorConsts {
 /// A ThemeMode Selector widget designed by Zhenya Karapetyan
 class ThemeModeSelector extends StatefulWidget {
   final int _durationInMs;
-  final ValueChanged<ThemeMode> _onChanged;
-  final Color _lightBackground;
-  final Color _darkBackground;
-  final Color _lightToggle;
-  final Color _darkToggle;
+  final Color _lightBackgroundColor;
+  final Color _darkBackgroundColor;
+  final Color _lightToggleColor;
+  final Color _darkToggleColor;
   final _ThemeModeSelectorConsts _consts;
+  final ValueChanged<ThemeMode> _onChanged;
 
   /// Creates a ThemeMode Selector.
   ///
@@ -91,18 +92,18 @@ class ThemeModeSelector extends StatefulWidget {
   ThemeModeSelector({
     Key key,
     durationInMs = 750,
-    double height = 339,
     Color lightBackground,
     Color lightToggle,
     Color darkBackground,
     Color darkToggle,
+    double height = 39,
     ValueChanged<ThemeMode> onChanged,
   })  : _durationInMs = durationInMs,
         _onChanged = onChanged,
-        _lightBackground = lightBackground ?? Color(0xFF689DFF),
-        _lightToggle = lightToggle ?? Colors.white,
-        _darkBackground = darkBackground ?? Color(0xFF040507),
-        _darkToggle = darkToggle ?? Colors.white,
+        _lightBackgroundColor = lightBackground,
+        _lightToggleColor = lightToggle,
+        _darkBackgroundColor = darkBackground,
+        _darkToggleColor = darkToggle,
         _consts = _ThemeModeSelectorConsts(height),
         super(key: key);
 
@@ -113,6 +114,7 @@ class ThemeModeSelector extends StatefulWidget {
 class _ThemeModeSelectorState extends State<ThemeModeSelector>
     with SingleTickerProviderStateMixin {
   AnimationController _animationController;
+
   Animation<Alignment> _alignmentAnimation;
   Animation<double> _starFade;
   Animation<double> _flareFade;
@@ -126,26 +128,24 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
   void initState() {
     super.initState();
 
-    // We may need context to look up Theme information; this is an approach to make that happen
-    // https://stackoverflow.com/a/49458289
-    () async {
-      await initialize(context);
-    }();
-  }
-
-  initialize(BuildContext context) {
+    // Setup the global animation controller using the duration parameter
+    // todo: what happens when the duration changes? Is the widget rebuilt? Does initState run again?
     Duration _duration = Duration(milliseconds: widget._durationInMs);
 
     _animationController = AnimationController(
       vsync: this,
       duration: _duration,
     );
+  }
 
+  initialize(BuildContext context, ThemeModeSelectorThemeData myTheme) {
+    // Setup the tween for the background colors
     _bgColorAnimation = ColorTween(
-      begin: widget._lightBackground,
-      end: widget._darkBackground,
+      begin: lightBackgroundColor(myTheme),
+      end: darkBackgroundColor(myTheme),
     ).animate(_animationController);
 
+    // the tween for the toggle button (left and right)
     _alignmentAnimation = AlignmentTween(
       begin: Alignment.centerLeft,
       end: Alignment.centerRight,
@@ -163,6 +163,7 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
         }),
     );
 
+    // Tweens and animation for the stars and flares
     var earlyFade = CurvedAnimation(
       parent: _animationController,
       curve: Interval(0.0, 0.5, curve: Curves.elasticOut),
@@ -181,6 +182,8 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
     super.dispose();
   }
 
+  // Builds the semi-complex tween for the stars and flares which aninate to
+  // and fro from the center of the widget
   Animation<RelativeRect> slide(Offset from, Offset to, double size) {
     var container = Rect.fromLTWH(
         0, 0, widget._consts.inset.width, widget._consts.inset.height);
@@ -198,8 +201,27 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
     ));
   }
 
+  lightToggleColor(myTheme) =>
+      widget._lightToggleColor ?? myTheme.lightToggleColor ?? Colors.white;
+
+  lightBackgroundColor(myTheme) =>
+      widget._lightBackgroundColor ??
+      myTheme.lightBackgroundColor ??
+      Color(0xFF689DFF);
+
+  darkToggleColor(myTheme) =>
+      widget._darkToggleColor ?? myTheme.darkToggleColor ?? Colors.white;
+
+  darkBackgroundColor(myTheme) =>
+      widget._darkBackgroundColor ??
+      myTheme.darkBackgroundColor ??
+      Color(0xFF040507);
+
   @override
   Widget build(BuildContext context) {
+    ThemeModeSelectorThemeData myTheme = ThemeModeSelectorTheme.of(context);
+    initialize(context, myTheme);
+
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
@@ -231,7 +253,8 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
                     .map((star) => CelestialTransition(
                           alphaAnimation: _starFade,
                           child: Star(
-                              size: star['size'], color: widget._darkToggle),
+                              size: star['size'],
+                              color: lightToggleColor(myTheme)),
                           relativeRectAnimation:
                               slide(star['from'], star['to'], star['size']),
                         ))
@@ -240,7 +263,8 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
                     .map((flare) => CelestialTransition(
                           alphaAnimation: _flareFade,
                           child: Flare(
-                              size: flare['size'], color: widget._lightToggle),
+                              size: flare['size'],
+                              color: lightToggleColor(myTheme)),
                           relativeRectAnimation:
                               slide(flare['from'], flare['to'], flare['size']),
                         ))
@@ -251,14 +275,14 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
                     FadeTransition(
                       opacity: _flareToggleFade,
                       child: Sun(
-                        color: widget._lightToggle,
+                        color: lightToggleColor(myTheme),
                         size: widget._consts.inset.height,
                       ),
                     ),
                     FadeTransition(
                       opacity: _starToggleFade,
                       child: Moon(
-                        color: widget._darkToggle,
+                        color: darkToggleColor(myTheme),
                         size: widget._consts.inset.height,
                       ),
                     ),

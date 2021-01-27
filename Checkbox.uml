@@ -1,0 +1,99 @@
+@startuml
+class AbstractNode {
+}
+
+class Checkbox extends StatefulWidget {
+    createState() 
+}
+
+class _CheckboxRenderObjectWidget extends LeafRenderObjectWidget {
+  _RenderCheckbox createRenderObject(BuildContext context)
+}
+
+class _CheckboxState extends State {
+    build(BuildContext context)
+}
+
+abstract class DiagnosticableTree {
+}
+
+abstract class Element extends DiagnosticableTree implements BuildContext {
+}
+
+class LeafRenderObjectElement extends RenderObjectElement {
+}
+
+class LeafRenderObjectWidget extends RenderObjectWidget {
+  createElement()
+}
+
+abstract class RenderBox extends RenderObject {
+}
+
+class _RenderCheckbox extends RenderToggleable {
+  void paint(PaintingContext context, Offset offset) 
+}
+
+class RenderConstrainedBox extends RenderProxyBox {
+}
+
+abstract class RenderObject extends AbstractNode implements HitTestTarget {
+}
+
+abstract class RenderObjectElement extends Element {
+}
+
+class RenderProxyBox extends RenderBox {
+}
+
+abstract class RenderToggleable extends RenderConstrainedBox {
+}
+
+abstract class StatefulWidget extends Widget {
+}
+
+abstract class Widget extends DiagnosticableTree {
+}
+
+
+Checkbox::createState --> _CheckboxState
+_CheckboxState::build --> _CheckboxRenderObjectWidget
+LeafRenderObjectWidget::createElement --> LeafRenderObjectElement
+_CheckboxRenderObjectWidget::createRenderObject --> _RenderCheckbox
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+skinparam defaultFontName  Helvetica
+skinparam sequenceMessageAlign center
+skinparam monochrome false
+
+skinparam class {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor DarkGray
+	BorderThickness 1
+}
+
+
+skinparam object {
+	ArrowColor Black
+	BackgroundColor White
+	BorderColor Black
+}
+
+skinparam package {
+	BackgroundColor White
+	BorderColor Black
+}
+@enduml
