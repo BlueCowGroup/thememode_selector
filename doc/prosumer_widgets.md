@@ -12,7 +12,7 @@ So, I see this as an opportunity to dissect some of the "official" packages and 
 
 I have performed a line-by-line reading of several Material components that ship with Flutter, and here is the list of functionality I did not include.
 
-* **State management** - My component manages its own toggle state internally, while the prosumer components require the user to control the state of the value of the toggle. I found this difficult to understand as a user of Flutter widgets as well. Why can't a checkbox maintain its own true/false values. So, I am interested in learning why that's a best practice followed by the standard widgets.
+* [**State management**](#state_management) - My component manages its own toggle state internally, while the prosumer components require the user to control the state of the value of the toggle. I found this difficult to understand as a user of Flutter widgets as well. Why can't a checkbox maintain its own true/false values. So, I am interested in learning why that's a best practice followed by the standard widgets.
 * **Event callbacks** - the standard components emit more events. I was concerned with emitting an `onChanged()` event, while the built-in widgets emit.
 * **[Theme support](#theme_support)** - This is a known area I need to beef up. Turns out there isn't an issue passing colors into my component, but in the absence of these optional parameters, I need to consult the ThemeData information to extract the appropriate color for my purposes. This is a bit of a problem in my case which I'll discuss in more detail in the section on themes.
 * **States** - Material Design and Flutter's implementation has a whole subsystem for managing theme properties and how they respond to several states (e.g. disabled, focused, hovered, selected, and others). I don't have support for any of that.
@@ -28,7 +28,16 @@ What I did well in my first attempt ... is not much. Other than creating a somew
 
 So the journey begins to learn more about the official and correct way to develop prosumer-grade widgets.
 
+<a name="state_management"></a>
+
+# State Management
+
+
+
+
+
 <a name="theme_support"></a>
+
 # Theme Support
 
 At the beginning of 2020, the Flutter team began rethinking the way they managed theme data throughout the system. Their initial approach was showing its limitations and the ad hoc use of color and style was getting hard to maintain and use properly. A [new approach](https://docs.google.com/document/d/1kzIOQN4QYfVsc5lMZgy_A-FWGXBAJBMySGqZqsJytcE/edit?usp=sharing) to Flutter themeing was documented and efforts began to port the existing widgets. I'm not sure if all of the Material components are now using this approach, however, the ones I reviewed for this document are compliant.
@@ -175,5 +184,49 @@ Obviously we don't have to implement all of these classes. The ones which we are
 * `_RenderCheckbox`
   This is where the drawing actually happens. The `paint()` method is responsible for drawing the checkbox outline, the checkmark is `value` is true and a dash if `value` is null. A lot of functionality is inherited from `RenderToggleable` and if you are writing a toggle (as we are in `ThemeModeSelector`) you have to know it fairly well.
 
+## What is the purpose behind `RenderObjectWidget`?
 
+> **Note** 
+>
+> Research for this section consists of the following readings
+>
+> * [Inside Flutter](https://flutter.dev/docs/resources/inside-flutter) by the Flutter team
+> * [Demystifying Widgets and RenderObjects Myths](https://medium.com/code-to-express/demystifying-widgets-and-renderobjects-myths-bdb19c070676) by Heritage Samuel Falodun
+> * [Flutter, what are Widgets, RenderObjects and Elements?](https://medium.com/flutter-community/flutter-what-are-widgets-renderobjects-and-elements-630a57d05208) by Norbert
+
+I have previously read the Flutter articles on how there are three trees maintained by Flutter and I vaguely recall that the trees at different levels are either immutable or have the potential for reuse with new values aka updating. I'm going to refresh myself and take some notes, but as I approach this subject, I still have a nagging doubt that this research will actually answer my question -- When (or Why) should I choose to use RenderObjectWidget, instead of composition right in my widget?
+
+The Inside Flutter article uses some elite CS-speak to describe how the platform is carefully designed to support a declarative UX and high-performance UX based on its careful choices regarding the data structures used and algorithms surrounding reuse (of elements) and size/layout negotiation. A key factor in the performance of Flutter is ensuring that as little as possible of the render tree has to be recomputed or redrawn in response to a change in style or structure. 
+
+#### Widget Tree
+
+Widgets are classes that represent configuration information for a visual object. They form the API that developers utilize when creating a visual component and they are lightweight and immutable.
+
+> An optimization mentioned in the "Inside Flutter" article involves the use of InheritedWidget. From the developers perspective it might be understood that a call to look up the current Theme might be walking back up the widget tree to find an ancestor of type Theme.
+>
+> `var themeData = Theme.of(context);`
+>
+> In order to keep performance high, objects extending from `InheritedWidget` are actively pushed down the tree and available to all child widgets. This is a clever optimization to keep the render passes fast.
+
+#### Element Tree
+
+The element tree is a data structure retaining the logical structure of the user interface. While the widgets themselves are immutable, the elements in this tree are a concrete representation of the component as it exists in the drawing context and its properties are mutable. Each Element holds a reference to its RenderObject and if the associated widget is a StatefulWidget, the Element will also hold the State objects.
+
+The resuability of an Element is a key to Flutter's performance, and in many cases the layout calculations performed for the Element can be reused even if the state has changed. `GlobalKey` is used to establish a strong relationship between the widget and its element, and results in layout optimizations even if the objects moves to different locations in the element tree.
+
+Each element maintains its own dirty state. This can be a reaction to external stimuli or by a call by the widget to `setState(...)`. During the build phase, the framework uses this dirty state indicator to identify the parts of the element tree which must be recalculated.
+
+#### Render Tree
+
+The render tree is a data structure which stores the geometry of the user interface. This structure enables the protocol that determines how components work with each other in the hierarchy to negotiate their dimensions and position based on rules surrounding constraints and size.
+
+There is mention in "Inside Flutter" which might hint at my original question. When performing animations, changes in values notify an observer list. The render tree maintains a list of these observable objects so a change to an animation's value may trigger a paint change (in the RenderObject) without triggering both a build and paint.
+
+The Element will create a RenderObject which handles the size, layout and painting of the component. 
+
+### What are the Takeaways?
+
+So, back to my original query. At what point should we use a RenderObjectWidget (and a RenderObject) versus using simple composition in our StatefulWidget?
+
+> @todo: Still formulating the takeaway; question asked on the Google group (https://groups.google.com/g/flutter-dev/c/9x9Ke0wFzTs)
 
