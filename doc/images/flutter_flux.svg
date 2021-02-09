@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="650px" height="163px" viewBox="0 0 650 163" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>flutter_flux</title>
+    <defs>
+        <rect id="path-1" x="65" y="17" width="142" height="90" rx="13"></rect>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="142" height="90" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+    </defs>
+    <g id="Page-2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-132.000000, -23.000000)">
+            <g id="flutter_flux" transform="translate(132.000000, 23.000000)">
+                <g id="Action" transform="translate(0.000000, 88.000000)">
+                    <rect id="Rectangle" stroke="#4F4F4F" stroke-width="3" fill="#74B6C9" x="1.5" y="1.5" width="105" height="56" rx="8"></rect>
+                    <text font-family="LucidaGrande-Bold, Lucida Grande" font-size="14" font-weight="bold" fill="#F7F7F7">
+                        <tspan x="31.4389648" y="34">Action</tspan>
+                    </text>
+                </g>
+                <g id="Action-Copy" transform="translate(312.000000, 0.000000)">
+                    <rect id="Rectangle" stroke="#4F4F4F" stroke-width="3" fill="#74B6C9" x="1.5" y="1.5" width="105" height="56" rx="8"></rect>
+                    <text id="Action" font-family="LucidaGrande-Bold, Lucida Grande" font-size="14" font-weight="bold" fill="#F7F7F7">
+                        <tspan x="31.4389648" y="34">Action</tspan>
+                    </text>
+                </g>
+                <g id="Dispatcher" transform="translate(156.000000, 88.000000)">
+                    <rect id="Rectangle-Copy" stroke="#D0D0D0" stroke-width="3" fill="#444242" x="1.5" y="1.5" width="105" height="56" rx="8"></rect>
+                    <text font-family="LucidaGrande-Bold, Lucida Grande" font-size="14" font-weight="bold" fill="#F7F7F7">
+                        <tspan x="15.5180664" y="34">Dispatcher</tspan>
+                    </text>
+                </g>
+                <g id="Store" transform="translate(312.000000, 88.000000)">
+                    <rect id="Rectangle-Copy-2" stroke="#4F4F4F" stroke-width="3" fill="#2D4552" x="1.5" y="1.5" width="105" height="56" rx="8"></rect>
+                    <text id="Store-Copy" font-family="LucidaGrande-Bold, Lucida Grande" font-size="14" font-weight="bold" fill="#F7F7F7">
+                        <tspan x="35.909668" y="34">Store</tspan>
+                    </text>
+                </g>
+                <g id="View" transform="translate(443.000000, 56.000000)">
+                    <use id="Rectangle" stroke="#3468C9" mask="url(#mask-2)" stroke-width="4" fill="#D7DAF1" stroke-dasharray="2,3" xlink:href="#path-1"></use>
+                    <text id="setState()" font-family="Courier-Bold, Courier" font-size="10" font-weight="bold" fill="#1F1F1F">
+                        <tspan x="0.995117188" y="56">setState()</tspan>
+                    </text>
+                    <text id="emitEvent()" font-family="Courier-Bold, Courier" font-size="10" font-weight="bold" fill="#1F1F1F">
+                        <tspan x="67.9946289" y="10">emitEvent()</tspan>
+                    </text>
+                    <rect id="Rectangle-Copy-3" stroke="#4F4F4F" stroke-width="3" fill="#5CB067" x="83.5" y="33.5" width="105" height="56" rx="8"></rect>
+                    <text font-family="LucidaGrande-Bold, Lucida Grande" font-size="14" font-weight="bold" fill="#F7F7F7">
+                        <tspan x="119.191406" y="67">View</tspan>
+                    </text>
+                    <circle id="Oval" fill="#1F1F1F" cx="137" cy="17" r="5"></circle>
+                    <circle id="Oval-Copy" fill="#1F1F1F" cx="66" cy="61" r="5"></circle>
+                </g>
+                <path id="Line" d="M147,113 L156,117.5 L147,122 L147,118 L107.5,118 C107.223858,118 107,117.776142 107,117.5 C107,117.25454 107.176875,117.050392 107.410124,117.008056 L107.5,117 L147,117 L147,113 Z" fill="#979797" fill-rule="nonzero"></path>
+                <path id="Line-Copy" d="M304,113 L313,117.5 L304,122 L304,118 L264.5,118 C264.223858,118 264,117.776142 264,117.5 C264,117.25454 264.176875,117.050392 264.410124,117.008056 L264.5,117 L304,117 L304,113 Z" fill="#979797" fill-rule="nonzero"></path>
+                <path id="Line-Copy-2" d="M518,113 L527,117.5 L518,122 L518,118 L420.5,118 C420.223858,118 420,117.776142 420,117.5 C420,117.25454 420.176875,117.050392 420.410124,117.008056 L420.5,117 L518,117 L518,113 Z" fill="#979797" fill-rule="nonzero"></path>
+                <path id="Line-Copy-3" d="M428.971531,24.9466309 L428.996,28.946 L579.496855,28.0000099 L580.004107,27.9968196 L579.999983,28.5040649 L579.499983,90.0040649 C579.497738,90.2801982 579.272068,90.5022285 578.995935,90.4999835 C578.750483,90.4979879 578.54778,90.3194589 578.507341,90.0858732 L578.500017,89.9959351 L578.996,29.002 L429.003,29.946 L429.028133,33.9464529 L420.00001,29.5031446 L428.971531,24.9466309 Z" fill="#979797" fill-rule="nonzero"></path>
+                <path id="Line-2" d="M311.995025,27.9950743 L312.004926,28.9950252 L311.50495,28.9999755 L210.991,29.994 L210.146,79.009 L214.145861,79.0788378 L209.491381,87.9999257 L205.147199,78.9236884 L209.146,78.992 L210.000074,29.4913806 L210.008463,29.0048422 L210.49505,29.0000245 L311.49505,28.0000245 L311.995025,27.9950743 Z" fill="#979797" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>

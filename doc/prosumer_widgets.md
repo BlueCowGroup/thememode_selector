@@ -1,3 +1,7 @@
+Work In Progress - Draft Mode
+
+
+
 # Exploration
 
 This is a working document for me to remind myself of the journey between my first attempt at a Flutter widget, and my road to understanding the challenges and learnings required to build the mythical _professional-grade_ widget. I believe this difference exists because I have looked at the open source code behind Flutter's own Material Design widgets. 
@@ -12,14 +16,15 @@ So, I see this as an opportunity to dissect some of the "official" packages and 
 
 I have performed a line-by-line reading of several Material components that ship with Flutter, and here is the list of functionality I did not include.
 
-* [**State management**](#state_management) - My component manages its own toggle state internally, while the prosumer components require the user to control the state of the value of the toggle. I found this difficult to understand as a user of Flutter widgets as well. Why can't a checkbox maintain its own true/false values. So, I am interested in learning why that's a best practice followed by the standard widgets.
+* [**State Management**](#state_management) - My component manages its own toggle state internally, while the prosumer components require the user to control the state of the value of the toggle. I found this difficult to understand as a user of Flutter widgets as well. Why can't a checkbox maintain its own true/false values. So, I am interested in learning why that's a best practice followed by the standard widgets.
 * **Event callbacks** - the standard components emit more events. I was concerned with emitting an `onChanged()` event, while the built-in widgets emit.
 * **[Theme support](#theme_support)** - This is a known area I need to beef up. Turns out there isn't an issue passing colors into my component, but in the absence of these optional parameters, I need to consult the ThemeData information to extract the appropriate color for my purposes. This is a bit of a problem in my case which I'll discuss in more detail in the section on themes.
-* **States** - Material Design and Flutter's implementation has a whole subsystem for managing theme properties and how they respond to several states (e.g. disabled, focused, hovered, selected, and others). I don't have support for any of that.
-* **Keyboard/Focus** - Yup, I totally ignored support for the keyboard and indicating focus concerns for web and iPadOS platforms.
-* **Semantic events** - I mentioned this earlier. I have some experience on the web with accessibility but very little on mobile and none on Flutter.
+* [**Material States**](#material_states) - Material Design and Flutter's implementation has a whole subsystem for managing theme properties and how they respond to several states (e.g. disabled, focused, hovered, selected, and others). I don't have support for any of that.
+* [**Keyboard/Focus**](#keyboard) - Yup, I totally ignored support for the keyboard and indicating focus concerns for web and iPadOS platforms.
 * **Null-safety** - My prior language experience didn't have support for null-safety. I think I understand it well enough to implement, but just when I think I understand it, I can get thrown. Still a bit shaky on the `late` keyword and what the exclamation is for in `widget.onChanged!(true)`. Looking forward to implementing this in my code so I can understand it better overall.
 * [**RenderObject**](#render) - It is very confusing for me to see these other components using a RenderObjectWidget in their implementations. I don't know if this will impact my implementation yet, but it will be interesting to learn why they just don't build out the widgets in (what I would consider being) the typical `build(BuildContext context)` manner. It seemed to work fine in my original component, but perhaps I am missing something?
+* [**Accessibility**](#accessibility) - I mentioned this earlier. I have some experience on the web with accessibility but very little on mobile and none on Flutter.
+* [**Localization**](#localization) - You might think (as I did) your component is a switch widget. There is an on and off state, and it is represented graphically. No need to delve into the dark and hairy world of localization. However, we are wrong. Every interactive prosumer widget has a need to support internationalization if it supports accessibility, which we all can agree it should.
 * **Testing** - It goes without saying we need (close to) complete code coverage before a component can be considered ready for production
 
 ## What I got right
@@ -30,7 +35,141 @@ So the journey begins to learn more about the official and correct way to develo
 
 <a name="state_management"></a>
 
-# State Management
+# State Management 
+
+This is from the API documentation
+
+> *The checkbox itself does not maintain any state. Instead, when the state of the checkbox changes, the widget calls the onChanged callback. Most widgets that use a checkbox will listen for the onChanged callback and rebuild the checkbox with a new value to update the visual appearance of the checkbox.*
+
+Well, that is opposite of how I managed state in my first iteration of my component development. My inclination when I wrote the initial version was to maintain this state in my widget, freeing the developer up from having to do extra work. Why shouldn't I keep track of the state of the `ThemeMode` in my component? Am I going to require the developer to create their own state object to maintain the state for such a simple toggle state. 
+
+As you may have intuited, the answer is yes. I will require the developer to maintain the underlying state for my simple `ThemeModeSelector`. Let's take a very brief look at why so we can better understand the decision rooted in the architectural choices the Flutter team adopted from the beginning. Flutter's use of a [Reactive User Interface](https://flutter.dev/docs/resources/architectural-overview#reactive-user-interfaces) is modeled after the [Facebook's Flux](https://facebook.github.io/flux/) architecture which made React such a game changer. 
+
+I think a lot of complexity of using Flutter as an application platform comes from the lack of a vendor-provided state management architecture. I just wrote Flutter uses a Reactive User Interface, but it doesn't actually go as far as advocate we use Flux, or Redux, or MobX, or any number of state management systems. Instead, Flutter concerns itself with a very small portion of the Flux architecture.
+
+![Flutter Flux](https://raw.githubusercontent.com/BlueCowGroup/thememode_selector/main/doc/images/flutter_flux.svg)
+
+Flutter's API only considers the View portion of the Flux diagram above, and punts on how that state is maintained in the application at large.
+
+At least they embrace the paramount concept of Flux which is to ensure state is decoupled from the UX. The `Widget` class is a very lightweight configuration of a UX component. It is designed to be immutable. Any change to the state which drives the `Widget` creates a new instance of the `Widget`. The underlying engine is optomized to know how this configuration change results in the construction or updating of the `RenderObject` instances.
+
+The `setState()` function is the mechanism for informing the `Widget` of a change to its configuration. If some action in the `Widget` intends to change the state, it does so by emitting an event that another part of the application is supposed to be listening.
+
+> Flutter goes a bit further enforcing the Flux architecture than most. The main state properties for most components (e.g. the `value` in a Checkbox widget) are required fields, which isn't all that surprising. But Flutter is the first framework I have come upon which will consider a UX widget to be in a disabled state if it does not have a listener, such as the `onPressed()` handler in the button widgets.
+
+<a name="material_states"></a>
+
+# Material States 
+
+Your widget can be in many states, and these states can make a difference in style. Cahnges in a widget's state may change the widget's mouse cursor, in others it may affect a border, and often its color will be dependent on its state. This is such a common practice when developing widgets, there is an `enum` which holds all of the common widget states called `MaterialState`.
+
+* `hovered` - The state when the user drags their mouse cursor over the given widget
+* `focused` - The state when the user navigates with the keyboard to a given widget (or tapped such as a text input widget)
+* `pressed` - The state when the user is actively pressing down on the given widget
+* `dragged` - The state when this widget is being dragged from one place to another by the user
+* `selected` - The state when this item has been selected
+* `disabled` - The state when this widget disabled and can not be interacted with
+* `error` - The state when the widget has entered some form of invalid state
+
+![Various Material States](https://lh3.googleusercontent.com/Qaj-_x4s0bulgcsVo6dUxM1-1quL65CXlLfLkc4AQ16sDmSib77x547BhNdJFgk2eYK6hS8GN6t2iTvD6QLMgvPzFKeUwmT_tkWUnLY=w1064-v0)
+
+## How states are managed
+
+Your widget is expected to manage which of the `MaterialState` options apply to your widget at any given time in a data structure of `Set<MaterialState>`. It is up to the widget author how this property is maintained, but it is common to keep track of the individual states as simple class properties, and build the set of `MaterialState`upon request.
+
+```dart
+Set<MaterialState> get _states => <MaterialState>{
+  if (!enabled) MaterialState.disabled,
+  if (_hovering) MaterialState.hovered,
+  if (_focused) MaterialState.focused,
+  if (widget.value) MaterialState.selected,
+};
+
+```
+
+###### Code excerpt from `Switch` widget
+
+## How states are used
+
+When it comes times to inspect the states and make decisions on which style we might use for a text color or border outline is when things get interesting, and just a bit complicated. The best way to decnstruct this is with an example, also from the `Switch` widget.
+
+```dart
+MaterialStateProperty<Color?> get _widgetThumbColor {
+  return MaterialStateProperty.resolveWith((Set<MaterialState> states) {
+    if (states.contains(MaterialState.disabled)) {
+      return widget.inactiveThumbColor;
+    }
+    if (states.contains(MaterialState.selected)) {
+      return widget.activeColor;
+    }
+    return widget.inactiveThumbColor;
+  });
+}
+```
+
+The `MaterialStateProperty` abstract class accepts a generic identifier for common theme properties (such as `Color` as in this example) and returns the variation of the `Color` property contained within the widget based on the current state maintained within the widget. 
+
+## Takeaways
+
+The widget developer needs to perform the following steps to support the state of material widgets.
+
+1. Identify the states from the `MaterialState` enumeration that apply to our widget. In my case, I will want to support `focused`, `selected` and `disabled`, and probably `hovered`
+2. If these states result in varying theme styles, I need to support these style variations in the `MyWidgetThemeData` and most likely, the widget parameters.
+3. Need to pass these properties to the `RenderObejctWidget` if I end up creating that layer
+
+<a name="keyboard"></a>
+
+# Keyboard and Focus
+
+> **Research**
+>
+> * [Handling web gestures in Flutter](https://medium.com/flutter/handling-web-gestures-in-flutter-e16946a04745) by Jose Alba
+> * [FocusNode class](https://api.flutter.dev/flutter/widgets/FocusNode-class.html)
+
+We need to consider keyboard-related functionality for all platforms now as keyboard and mouse support is supported on every platform. This involves mouse cursor appearance as well as focus and keyboard controls. These are all different systems in Flutter (e.g. Actions, Shortcuts, MouseRegion, and Focus widgets), however they are all consolidated in a single widget named `FocusableActionDetector` widget. There is no visual representation of this widget, but it will provide convenience callbacks for focus and hover events, and key bindings and actions for keyboard interactions.
+
+### Responding to focus
+
+As mentioned the [FocusableActionDetector](https://api.flutter.dev/flutter/widgets/FocusableActionDetector-class.html) widget will become the centerpoint of our control over how our widget responds to focus. You may recall from the prior section on Material States, there is a built-in enumeration for tracking common states like `focused` and `hovered`. Our work in this section will also provide a way for us to manage those states as well.
+
+> @todo: The built-in widgets usually maintain the various states using private properties (e.g. _hovering, _focused). When it comes time to reference a `Set<MaterialState>` they will build the set from the state of these private variables. I'm wondering why they don't just maintain the set directly...
+
+We begin by wrapping our existing widget and identifying handlers for our state properties.
+
+```dart
+Set<MaterialState> _states = {};
+
+void _handleFocusHighlight(bool value) {
+  bool modified = value
+      ? _states.add(MaterialState.focused)
+      : _states.remove(MaterialState.focused);
+  if (modified) setState(() {});
+}
+
+void _handleHoverHighlight(bool value) {
+  bool modified = value
+      ? _states.add(MaterialState.hovered)
+      : _states.remove(MaterialState.hovered);
+  if (modified) setState(() {});
+}
+
+@override
+Widget build(BuildContext context) {
+  return FocusableActionDetector(
+    onShowFocusHighlight: _handleFocusHighlight,
+    onShowHoverHighlight: _handleHoverHighlight,
+    child: ThemeModeSelector(…),
+  }
+}
+```
+
+As you can see in the above code, I have created a `Set<MaterialState>` variable to maintain my component state. This approach makes more sense to me than storing state in individual private variables (as most built-in widgets do) and then building the `Set<MaterialState>` on the fly. In the next few days, this may prove to be a good approach, or I may find out there is a good reason for the approach used by the built-ins. If an `add` or `remove` method on a `Set` ends up modifying the `Set`, they return `true`, so I am using this as an indicator to trigger a call to the `build(…)` method.
+
+### Receiving focus
+
+
+
+### Keyboard input
 
 
 
@@ -40,7 +179,7 @@ So the journey begins to learn more about the official and correct way to develo
 
 # Theme Support
 
-At the beginning of 2020, the Flutter team began rethinking the way they managed theme data throughout the system. Their initial approach was showing its limitations and the ad hoc use of color and style was getting hard to maintain and use properly. A [new approach](https://docs.google.com/document/d/1kzIOQN4QYfVsc5lMZgy_A-FWGXBAJBMySGqZqsJytcE/edit?usp=sharing) to Flutter themeing was documented and efforts began to port the existing widgets. I'm not sure if all of the Material components are now using this approach, however, the ones I reviewed for this document are compliant.
+At the beginning of 2020, the Flutter team began rethinking the way they managed theme data throughout the system. Their initial approach was showing its limitations and the ad hoc use of color and style was getting hard to maintain and use properly. A [new approach](https://docs.google.com/document/d/1kzIOQN4QYfVsc5lMZgy_A-FWGXBAJBMySGqZqsJytcE/edit?usp=sharing) to Flutter theming was documented and efforts began to port the existing widgets. I'm not sure if all of the Material components are now using this approach, however, the ones I reviewed for this document are compliant.
 
 Based on this document, we have some new best practices
 
@@ -229,4 +368,35 @@ The Element will create a RenderObject which handles the size, layout and painti
 So, back to my original query. At what point should we use a RenderObjectWidget (and a RenderObject) versus using simple composition in our StatefulWidget?
 
 > @todo: Still formulating the takeaway; question asked on the Google group (https://groups.google.com/g/flutter-dev/c/9x9Ke0wFzTs)
+
+<a name="accessibility"></a>
+
+# Accessibility
+
+You might think that we have dealt with all of the most difficult aspects of making a truly prosumer component at this point, but we are not even close. :) 
+
+Accessibility is one of those subjects which is a very broad topic while also being deep. We solved some accessibility constraints early on when we added support for focus and keyboard navigation. WHen we dicussed theming, we also dealt with high-contract themes for better component visibility. But we haven't yet addressed the issues surrounding semantic events, which establish controls on how screen readers and search engines interpret the meaning behind our components.
+
+### Semantics
+
+We are developing a selector widget for `ThemeMode` states. Basically, a simple choice between whether the user chooses the `light` or `dark` mode of a theme. Now close your eyes, and imagine you have to talk someone through the operation of this component without the use of your computer screen. Let's make it simple, and assume the user has already figured out how to set the focus on the widget – what's next?
+
+1. The widget should announce itself – "Toggle switch to select the light or dark theme mode"
+2. By identifying the control as a toggle, they can extrapolate that it has an on or off mode. It will be important for the user to hear in which state the toggle is currently set.
+3. The user needs to discover how to interact with the component. 
+4. As the component changes state, it must announce the result to the user.
+
+### Other Accessibility Concerns
+
+Flutter provides a [checklist](https://flutter.dev/docs/development/accessibility-and-localization/accessibility#accessibility-release-checklist) for developers to help ensure our applications and components are accessible as possible. A big problem can be color contrast issues, particularly with text, however our component does not have visible text. We do allow users to activate our toggle with a tap, and the checklist states the minimum tappable area for our component should be 48x48 to minimize the impact to those users with fine motor skill issues. The original version of my toggle was 39 dpi tall, so I will address this shortcoming with either some tappable margin/padding or increasing the height of the widget. I may also tie the overall size of the widget to the user's text scaling setting.
+
+Let's also not forget a screen reader is vocalizing text phrases to our users. Anytime there is text involved, we have to convert that spoken text to a language the user will understand. Hence there is a need for internationalization and localization for every interactive or descriptive widget. 
+
+<a name="localization"></a>
+
+# Localization
+
+Many widgets we develop will have text labels or other content displayed as part of rendering the widget. In these cases, a prosumer widget will be expected to support the display of this text using the language of choice for the user. This is called Localization or l10n for short. You may think that the `ThemeModeSelector` widget has dodged a bullet because it has no visible text and we can skip the entire hassle of maintaining additional resource files to support l10n, but not so fast.
+
+Screen readers will speak accessibility text to a user regardless of whether there is visible text on the screen. And this content needs to be spoken in the language the customer can understand. Therefore, we _always_ have to ensure our components also support l10n and the complexities that adds to our widgets is not insignificant. This is why I consider support for accessiblity is a lot more challenging than it can initially appear.
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thememode_selector/src/focus_background.dart';
 import 'package:thememode_selector/thememode_selector.dart';
 import 'celestial_transition.dart';
 import 'flare.dart';
@@ -9,12 +10,15 @@ import 'sun.dart';
 class _ThemeModeSelectorConsts {
   Size size;
   EdgeInsets padding;
+  EdgeInsets focusPadding;
   Size inset;
   double toggleDiameter;
   List<dynamic> stars = [];
   List<dynamic> flares = [];
 
   _ThemeModeSelectorConsts(double height) {
+    focusPadding = EdgeInsets.all(2);
+    height = height - focusPadding.bottom - focusPadding.top;
     var width = height * 100 / 56;
     size = Size(width, height);
     padding = EdgeInsets.fromLTRB(
@@ -114,6 +118,7 @@ class ThemeModeSelector extends StatefulWidget {
 class _ThemeModeSelectorState extends State<ThemeModeSelector>
     with SingleTickerProviderStateMixin {
   AnimationController _animationController;
+  Set<MaterialState> _states = {};
 
   Animation<Alignment> _alignmentAnimation;
   Animation<double> _starFade;
@@ -217,82 +222,113 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
       myTheme.darkBackgroundColor ??
       Color(0xFF040507);
 
+  void _handleFocusHighlight(bool value) {
+    print('_handleFocusHighlight($value)');
+    bool modified = value
+        ? _states.add(MaterialState.focused)
+        : _states.remove(MaterialState.focused);
+    if (modified) setState(() {});
+  }
+
+  void _handleHoverHighlight(bool value) {
+    print('_handleHoverHighlight($value)');
+    bool modified = value
+        ? _states.add(MaterialState.hovered)
+        : _states.remove(MaterialState.hovered);
+    if (modified) setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     ThemeModeSelectorThemeData myTheme = ThemeModeSelectorTheme.of(context);
     initialize(context, myTheme);
 
-    return AnimatedBuilder(
-      animation: _animationController,
-      builder: (context, child) {
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              if (_animationController.isCompleted) {
-                _animationController.reverse();
-              } else {
-                _animationController.forward();
-              }
+    return FocusableActionDetector(
+      onShowFocusHighlight: _handleFocusHighlight,
+      onShowHoverHighlight: _handleHoverHighlight,
+      child: AnimatedBuilder(
+        animation: _animationController,
+        builder: (context, child) {
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                if (_animationController.isCompleted) {
+                  _animationController.reverse();
+                } else {
+                  _animationController.forward();
+                }
 
-              isChecked = !isChecked;
-            });
-          },
-          child: Container(
-            width: widget._consts.size.width,
-            height: widget._consts.size.height,
-            padding: widget._consts.padding,
-            decoration: BoxDecoration(
-              color: _bgColorAnimation.value,
-              borderRadius: BorderRadius.all(
-                Radius.circular(widget._consts.size.height),
-              ),
-            ),
+                isChecked = !isChecked;
+              });
+            },
             child: Stack(
-              children: <Widget>[
-                ...widget._consts.stars
-                    .map((star) => CelestialTransition(
-                          alphaAnimation: _starFade,
-                          child: Star(
-                              size: star['size'],
-                              color: lightToggleColor(myTheme)),
-                          relativeRectAnimation:
-                              slide(star['from'], star['to'], star['size']),
-                        ))
-                    .toList(),
-                ...widget._consts.flares
-                    .map((flare) => CelestialTransition(
-                          alphaAnimation: _flareFade,
-                          child: Flare(
-                              size: flare['size'],
-                              color: lightToggleColor(myTheme)),
-                          relativeRectAnimation:
-                              slide(flare['from'], flare['to'], flare['size']),
-                        ))
-                    .toList(),
-                Align(
-                  alignment: _alignmentAnimation.value,
-                  child: Stack(children: [
-                    FadeTransition(
-                      opacity: _flareToggleFade,
-                      child: Sun(
-                        color: lightToggleColor(myTheme),
-                        size: widget._consts.inset.height,
-                      ),
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: widget._consts.size.width,
+                  height: widget._consts.size.height,
+                  padding: widget._consts.padding,
+                  decoration: BoxDecoration(
+                    color: _bgColorAnimation.value,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(widget._consts.size.height),
                     ),
-                    FadeTransition(
-                      opacity: _starToggleFade,
-                      child: Moon(
-                        color: darkToggleColor(myTheme),
-                        size: widget._consts.inset.height,
+                  ),
+                  child: Stack(
+                    children: <Widget>[
+                      ...widget._consts.stars
+                          .map((star) => CelestialTransition(
+                                alphaAnimation: _starFade,
+                                child: Star(
+                                    size: star['size'],
+                                    color: lightToggleColor(myTheme)),
+                                relativeRectAnimation: slide(
+                                    star['from'], star['to'], star['size']),
+                              ))
+                          .toList(),
+                      ...widget._consts.flares
+                          .map((flare) => CelestialTransition(
+                                alphaAnimation: _flareFade,
+                                child: Flare(
+                                    size: flare['size'],
+                                    color: lightToggleColor(myTheme)),
+                                relativeRectAnimation: slide(
+                                    flare['from'], flare['to'], flare['size']),
+                              ))
+                          .toList(),
+                      Align(
+                        alignment: _alignmentAnimation.value,
+                        child: Stack(children: [
+                          FadeTransition(
+                            opacity: _flareToggleFade,
+                            child: Sun(
+                              color: lightToggleColor(myTheme),
+                              size: widget._consts.inset.height,
+                            ),
+                          ),
+                          FadeTransition(
+                            opacity: _starToggleFade,
+                            child: Moon(
+                              color: darkToggleColor(myTheme),
+                              size: widget._consts.inset.height,
+                            ),
+                          ),
+                        ]),
                       ),
-                    ),
-                  ]),
+                    ],
+                  ),
+                ),
+                FocusBackground(
+                  padding: widget._consts.focusPadding,
+                  focused: _states.contains(MaterialState.focused),
+                  width: widget._consts.size.width,
+                  height: widget._consts.size.height,
                 ),
               ],
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
