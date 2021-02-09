@@ -43,13 +43,11 @@ This is from the API documentation
 
 Well, that is opposite of how I managed state in my first iteration of my component development. My inclination when I wrote the initial version was to maintain this state in my widget, freeing the developer up from having to do extra work. Why shouldn't I keep track of the state of the `ThemeMode` in my component? Am I going to require the developer to create their own state object to maintain the state for such a simple toggle state. 
 
-As you may have intuited, the answer is yes. I will require the developer to maintain the underlying state for my simple `ThemeModeSelector`. Let's take a very brief look at why so we can better understand the decision rooted in the architectural choices the Flutter team adopted from the beginning. Flutter's use of a [Reactive User Interface](https://flutter.dev/docs/resources/architectural-overview#reactive-user-interfaces) is modeled after the [Facebook's Flux](https://facebook.github.io/flux/) architecture which made React such a game changer. 
-
-I think a lot of complexity of using Flutter as an application platform comes from the lack of a vendor-provided state management architecture. I just wrote Flutter uses a Reactive User Interface, but it doesn't actually go as far as advocate we use Flux, or Redux, or MobX, or any number of state management systems. Instead, Flutter concerns itself with a very small portion of the Flux architecture.
+As you may have intuited, the answer is yes. I will require the developer to maintain the underlying state for my simple `ThemeModeSelector`. Let's take a very brief look at why so we can better understand the decision rooted in the architectural choices the Flutter team adopted from the beginning. 
 
 ![Flutter Flux](https://raw.githubusercontent.com/BlueCowGroup/thememode_selector/main/doc/images/flutter_flux.svg)
 
-Flutter's API only considers the View portion of the Flux diagram above, and punts on how that state is maintained in the application at large.
+Flutter's documentation promotes its use of a [Reactive User Interface](https://flutter.dev/docs/resources/architectural-overview#reactive-user-interfaces) which is modeled after the [Facebook's Flux](https://facebook.github.io/flux/) architecture which made React such a game changer. But we have to understand that Flutter takes a hard pass on recommending any state management architecture (such as Flux) which causes a lot of confusion for developers new to the framework or Reactive principles. Flutter's API only considers the dashed portion around the View component in the Flux diagram above. 
 
 At least they embrace the paramount concept of Flux which is to ensure state is decoupled from the UX. The `Widget` class is a very lightweight configuration of a UX component. It is designed to be immutable. Any change to the state which drives the `Widget` creates a new instance of the `Widget`. The underlying engine is optomized to know how this configuration change results in the construction or updating of the `RenderObject` instances.
 
