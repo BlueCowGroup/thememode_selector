@@ -43,7 +43,7 @@ Widget build(BuildContext context) {
         height: 39,
         onChanged: (mode) {
           print('ThemeMode changed to $mode');
-          ThemeModeManager.of(context).themeMode = mode;
+          ThemeModeManager.of(context)!.themeMode = mode;
         },
       ),
     ),

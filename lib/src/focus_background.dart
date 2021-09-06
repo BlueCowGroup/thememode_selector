@@ -6,9 +6,13 @@ class FocusBackground extends StatelessWidget {
   final EdgeInsets _padding;
   final bool _focused;
 
-  const FocusBackground(
-      {Key key, EdgeInsets padding, bool focused, double height, double width})
-      : _padding = padding,
+  const FocusBackground({
+    Key? key,
+    required EdgeInsets padding,
+    required bool focused,
+    required double height,
+    required double width,
+  })   : _padding = padding,
         _focused = focused,
         _height = height,
         _width = width,

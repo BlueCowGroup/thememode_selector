@@ -5,8 +5,8 @@ repository: https://github.com/BlueCowGroup/thememode_selector
 homepage: https://github.com/BlueCowGroup/thememode_selector
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
-  flutter: ">=1.17.0"
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
 
 dependencies:
   flutter:

@@ -12,14 +12,15 @@ class ThemeModeManager extends StatefulWidget {
   final Widget Function(ThemeMode themeMode) builder;
   final ThemeMode defaultThemeMode;
 
-  const ThemeModeManager({Key key, this.builder, this.defaultThemeMode})
+  const ThemeModeManager(
+      {Key? key, required this.builder, required this.defaultThemeMode})
       : super(key: key);
 
   @override
   _ThemeModeManagerState createState() =>
       _ThemeModeManagerState(themeMode: defaultThemeMode);
 
-  static _ThemeModeManagerState of(BuildContext context) {
+  static _ThemeModeManagerState? of(BuildContext context) {
     return context.findAncestorStateOfType<_ThemeModeManagerState>();
   }
 }
@@ -27,7 +28,8 @@ class ThemeModeManager extends StatefulWidget {
 class _ThemeModeManagerState extends State<ThemeModeManager> {
   ThemeMode _themeMode;
 
-  _ThemeModeManagerState({ThemeMode themeMode}) : _themeMode = themeMode;
+  _ThemeModeManagerState({required ThemeMode themeMode})
+      : _themeMode = themeMode;
 
   set themeMode(ThemeMode mode) {
     if (_themeMode != mode) {
@@ -64,7 +66,7 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   final String title;
 
-  const HomePage({Key key, this.title}) : super(key: key);
+  const HomePage({Key? key, required this.title}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +81,7 @@ class HomePage extends StatelessWidget {
             print('ThemeMode changed to $mode');
             // Again, this could be using whatever approach to state
             // management you like
-            ThemeModeManager.of(context).themeMode = mode;
+            ThemeModeManager.of(context)!.themeMode = mode;
           },
         ),
       ),
