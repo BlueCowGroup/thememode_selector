@@ -8,11 +8,11 @@ import 'star.dart';
 import 'sun.dart';
 
 class _ThemeModeSelectorConsts {
-  Size size;
-  EdgeInsets padding;
-  EdgeInsets focusPadding;
-  Size inset;
-  double toggleDiameter;
+  late Size size;
+  late EdgeInsets padding;
+  late EdgeInsets focusPadding;
+  late Size inset;
+  late double toggleDiameter;
   List<dynamic> stars = [];
   List<dynamic> flares = [];
 
@@ -72,10 +72,10 @@ class _ThemeModeSelectorConsts {
 /// A ThemeMode Selector widget designed by Zhenya Karapetyan
 class ThemeModeSelector extends StatefulWidget {
   final int _durationInMs;
-  final Color _lightBackgroundColor;
-  final Color _darkBackgroundColor;
-  final Color _lightToggleColor;
-  final Color _darkToggleColor;
+  final Color? _lightBackgroundColor;
+  final Color? _darkBackgroundColor;
+  final Color? _lightToggleColor;
+  final Color? _darkToggleColor;
   final _ThemeModeSelectorConsts _consts;
   final ValueChanged<ThemeMode> _onChanged;
 
@@ -94,15 +94,15 @@ class ThemeModeSelector extends StatefulWidget {
   ///   foreground and background colors representing the "dark" theme mode
   ///
   ThemeModeSelector({
-    Key key,
+    Key? key,
     durationInMs = 750,
-    Color lightBackground,
-    Color lightToggle,
-    Color darkBackground,
-    Color darkToggle,
+    Color? lightBackground,
+    Color? lightToggle,
+    Color? darkBackground,
+    Color? darkToggle,
     double height = 39,
-    ValueChanged<ThemeMode> onChanged,
-  })  : _durationInMs = durationInMs,
+    required ValueChanged<ThemeMode> onChanged,
+  })   : _durationInMs = durationInMs,
         _onChanged = onChanged,
         _lightBackgroundColor = lightBackground,
         _lightToggleColor = lightToggle,
@@ -117,15 +117,15 @@ class ThemeModeSelector extends StatefulWidget {
 
 class _ThemeModeSelectorState extends State<ThemeModeSelector>
     with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
+  late AnimationController _animationController;
   Set<MaterialState> _states = {};
 
-  Animation<Alignment> _alignmentAnimation;
-  Animation<double> _starFade;
-  Animation<double> _flareFade;
-  Animation<double> _starToggleFade;
-  Animation<double> _flareToggleFade;
-  Animation<Color> _bgColorAnimation;
+  late Animation<Alignment> _alignmentAnimation;
+  late Animation<double> _starFade;
+  late Animation<double> _flareFade;
+  late Animation<double> _starToggleFade;
+  late Animation<double> _flareToggleFade;
+  late Animation<Color?> _bgColorAnimation;
 
   bool isChecked = false;
 
@@ -134,7 +134,17 @@ class _ThemeModeSelectorState extends State<ThemeModeSelector>
     super.initState();
 
     // Setup the global animation controller using the duration parameter
-    // todo: what happens when the duration changes? Is the widget rebuilt? Does initState run again?
+    _initializeAnimationController();
+  }
+
+  @override
+  void didUpdateWidget(ThemeModeSelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // rebuild the global animation controller using the duration parameter
+    _initializeAnimationController();
+  }
+
+  _initializeAnimationController() {
     Duration _duration = Duration(milliseconds: widget._durationInMs);
 
     _animationController = AnimationController(

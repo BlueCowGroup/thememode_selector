@@ -6,7 +6,8 @@ class Star extends StatelessWidget {
   final double size;
   final Color color;
 
-  const Star({Key key, this.size, this.color}) : super(key: key);
+  const Star({Key? key, required this.size, required this.color})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class _StarPainter extends CustomPainter {
   final Color color;
   final int sides = 10;
 
-  _StarPainter({this.diameter, this.color});
+  _StarPainter({required this.diameter, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
