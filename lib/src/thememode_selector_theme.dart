@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 class ThemeModeSelectorTheme extends InheritedWidget {
   final ThemeModeSelectorThemeData data;
 
-  const ThemeModeSelectorTheme({Key key, this.data, Widget child})
+  const ThemeModeSelectorTheme(
+      {Key? key, required this.data, required Widget child})
       : super(key: key, child: child);
 
   static ThemeModeSelectorThemeData of(BuildContext context) {
@@ -22,11 +23,11 @@ class ThemeModeSelectorTheme extends InheritedWidget {
 }
 
 class ThemeModeSelectorThemeData with Diagnosticable {
-  final Color lightToggleColor;
-  final Color lightBackgroundColor;
-  final Color darkToggleColor;
-  final Color darkBackgroundColor;
-  final double height;
+  final Color? lightToggleColor;
+  final Color? lightBackgroundColor;
+  final Color? darkToggleColor;
+  final Color? darkBackgroundColor;
+  final double? height;
 
   ThemeModeSelectorThemeData({
     this.lightToggleColor,
@@ -37,11 +38,11 @@ class ThemeModeSelectorThemeData with Diagnosticable {
   });
 
   ThemeModeSelectorThemeData copyWith({
-    Color lightToggleColor,
-    Color lightBackgroundColor,
-    Color darkToggleColor,
-    Color darkBackgroundColor,
-    double height,
+    Color? lightToggleColor,
+    Color? lightBackgroundColor,
+    Color? darkToggleColor,
+    Color? darkBackgroundColor,
+    double? height,
   }) =>
       ThemeModeSelectorThemeData(
         lightToggleColor: lightToggleColor ?? this.lightToggleColor,
@@ -101,11 +102,11 @@ class ThemeModeSelectorThemeData with Diagnosticable {
     return ThemeModeSelectorThemeData(
       lightToggleColor: Color.lerp(a.lightToggleColor, b.lightToggleColor, t),
       lightBackgroundColor:
-          Color.lerp(a?.lightBackgroundColor, b?.lightBackgroundColor, t),
+          Color.lerp(a.lightBackgroundColor, b.lightBackgroundColor, t),
       darkToggleColor: Color.lerp(a.darkToggleColor, b.darkToggleColor, t),
       darkBackgroundColor:
-          Color.lerp(a?.darkBackgroundColor, b?.darkBackgroundColor, t),
-      height: lerpDouble(a?.height, b?.height, t),
+          Color.lerp(a.darkBackgroundColor, b.darkBackgroundColor, t),
+      height: lerpDouble(a.height, b.height, t),
     );
   }
 }

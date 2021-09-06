@@ -6,10 +6,10 @@ class CelestialTransition extends StatelessWidget {
   final Animation<double> alphaAnimation;
 
   const CelestialTransition({
-    Key key,
-    this.child,
-    this.relativeRectAnimation,
-    this.alphaAnimation,
+    Key? key,
+    required this.child,
+    required this.relativeRectAnimation,
+    required this.alphaAnimation,
   }) : super(key: key);
 
   @override
